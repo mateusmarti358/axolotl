@@ -13,7 +13,7 @@ class Dither(Processor):
             15.0/16.0,  7.0/16.0, 13.0/16.0,  5.0/16.0
         ])
 
-        bayer_idx = (y % 4) * 4 + (x % 4)
+        bayer_idx = ((y//3) % 4) * 4 + ((x//3) % 4)
         threshold = bayer[bayer_idx]
 
         colour = pixels_in[x, y]

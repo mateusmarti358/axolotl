@@ -7,10 +7,10 @@ from core.processor import Processor, get_luma
 class Gaussbloom(Processor):
     def __init__(self, width, height):
         super().__init__(width, height)
-        self.radius = 12
-        self.sigma = 9.0
-        self.threshold = 0.6
-        self.intensity = 0.4
+        self.radius = 9
+        self.sigma = 3.0
+        self.threshold = 0.1
+        self.intensity = 0.9
 
         self.weights_field = ti.field(dtype=ti.f32, shape=(self.radius * 2 + 1,))
         
