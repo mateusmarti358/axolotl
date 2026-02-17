@@ -21,7 +21,6 @@ class App:
         # ENGINES
         self.engines: list[Engine] = []
         for proc, params in zip(procs, procs_params):
-            print(params['intensity'])
             self.engines.append(Engine(proc, params, params['intensity'], self.img.width, self.img.height, self.rnd))
         
         self.engines.append(Engine(ProcLoader().load('procs/zoom.py')[0], None, 1, self.img.width, self.img.height, self.rnd))
