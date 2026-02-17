@@ -39,13 +39,17 @@ class Shift(Processor):
             (0.8, 1.0, 1.8)
         ]
 
-        distance = 10
+        dx = 10
+        dy = 10
         threshold = 0.05
         for r in ti.static(ts):
             n = rnd.random(int(t/5) + x)
             if r[0] < n < r[1]:
-                distance *= int(1 + r[2])
-                threshold *= 1 + r[2]
+                dx *= int(1 + r[2])
+                # threshold *= 1 + r[2]
+            n = rnd.random(int(t/5) + y)
+            if r[0] < n < r[1]:
+                dy *= int(1 + r[2])
 
         curr_luma = get_luma(self.get_pixel(pixels_in, x, y))
 
@@ -54,7 +58,7 @@ class Shift(Processor):
 
         r_dir = -1 if y % 2 == 0 else 1
 
-        for i in range(1, distance + 1):
+        for i in range(1, dy + 1):
             neighbour_x = x + (i * r_dir)
             neighbour_luma = get_luma(self.get_pixel(pixels_in, neighbour_x, y))
 
@@ -67,9 +71,9 @@ class Shift(Processor):
         best_yg = y
         melhor_luma_g = curr_luma
 
-        g_dir = 1 if x % 2 == 0 else -1
+        g_dir = 1 if y % 2 == 0 else -1
 
-        for i in range(1, distance + 1):
+        for i in range(1, dx + 1):
             neighbour_y = y + (i * g_dir)
             neighbour_luma = get_luma(self.get_pixel(pixels_in, x, neighbour_y))
 

@@ -15,8 +15,16 @@ class App:
 
         # LOAD IMAGE
         raw_img = Image.open(img_path).convert("RGB")
-        raw_img = raw_img.resize((1000, 1000), Image.Resampling.LANCZOS)
+
+        max_size = 1000
+        ratio = min(max_size / raw_img.width, max_size / raw_img.height)
+        new_size = (int(raw_img.width * ratio), int(raw_img.height * ratio))
+
+        raw_img = raw_img.resize(new_size, Image.Resampling.LANCZOS)
         self.img = Pixels(raw_img)
+
+        self.pixels_in = ti.Vector.field(3, dtype=ti.f32, shape=(self.img.height, self.img.width))
+        self.pixels_out = ti.Vector.field(3, dtype=ti.f32, shape=(self.img.height, self.img.width))
 
         # ENGINES
         self.engines: list[Engine] = []
@@ -24,7 +32,6 @@ class App:
             self.engines.append(Engine(proc, params, params['intensity'], self.img.width, self.img.height, self.rnd))
         
         self.engines.append(Engine(ProcLoader().load('procs/zoom.py')[0], None, 1, self.img.width, self.img.height, self.rnd))
-        self.engines[0].set_pixels_in(self.img.pixels)
 
         # INPUTS
         self.last_mouse = None
@@ -62,17 +69,19 @@ class App:
     def run(self):
         gui = ti.GUI("Axolotl", res=(self.img.width, self.img.height))
 
+        buffers = [self.pixels_in, self.pixels_out]
         while gui.running:
             self.handle_events(gui)
 
             if gui.is_pressed(ti.GUI.ESCAPE):
                 break
 
-            for i in range(len(self.engines)):
-                self.engines[i].process(gui.frame)
-                if i < len(self.engines) - 1:
-                    self.engines[i + 1].set_pixels_in(self.engines[i].pixels_out)
+            self.engines[0].process(self.img.pixels, self.pixels_in, gui.frame)
+            for i in range(1, len(self.engines)):
+                self.engines[i].process(buffers[(i + 1) % 2], buffers[i % 2], gui.frame)
+                # if i < len(self.engines) - 1:
+                #     self.engines[i + 1].set_pixels_in(self.engines[i].pixels_out)
 
-            gui.set_image(self.engines[-1].pixels_out)
+            gui.set_image(self.pixels_out)
 
             gui.show()

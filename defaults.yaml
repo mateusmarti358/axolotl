@@ -1,14 +1,14 @@
 Shift:
   # applies to 2 components at once (R, G, B)
-  channels: 'RG'
+  channels: 'RB'
 
 DiagonalMatrix:
-  square_size: 3
+  square_size: 2
   thickness: 1
   diagonals: True
 
 Filter:
-  threshold: 0.5
+  threshold: 0.2
 
 Crt:
   scanline_width: 1.0
@@ -22,7 +22,7 @@ BoxBloom:
   loss: 0.99
 
 GaussBloom:
-  radius: 9
-  sigma: 3.0
-  threshold: 0.1
-  intensity: 0.9
+  radius: 24
+  sigma: 24.0
+  threshold: 0.01
+  mix: 1.0
