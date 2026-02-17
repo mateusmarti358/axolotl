@@ -7,14 +7,14 @@ class Neonedges(Processor):
     def process(self, pixels_in, x, y, t, rnd):
         t *= 0.06
 
-        tl = get_luma(pixels_in, x - 1, y - 1)
-        tc = get_luma(pixels_in, x,     y - 1)
-        tr = get_luma(pixels_in, x + 1, y - 1)
-        l  = get_luma(pixels_in, x - 1, y)
-        r  = get_luma(pixels_in, x + 1, y)
-        bl = get_luma(pixels_in, x - 1, y + 1)
-        bc = get_luma(pixels_in, x,     y + 1)
-        br = get_luma(pixels_in, x + 1, y + 1)
+        tl = get_luma(self.get_pixel(pixels_in, x - 1, y - 1))
+        tc = get_luma(self.get_pixel(pixels_in, x,     y - 1))
+        tr = get_luma(self.get_pixel(pixels_in, x + 1, y - 1))
+        l  = get_luma(self.get_pixel(pixels_in, x - 1, y))
+        r  = get_luma(self.get_pixel(pixels_in, x + 1, y))
+        bl = get_luma(self.get_pixel(pixels_in, x - 1, y + 1))
+        bc = get_luma(self.get_pixel(pixels_in, x,     y + 1))
+        br = get_luma(self.get_pixel(pixels_in, x + 1, y + 1))
 
         gx = -tl - 2.0 * l - bl + tr + 2.0 * r + br
         gy = -tl - 2.0 * tc - tr + bl + 2.0 * bc + br

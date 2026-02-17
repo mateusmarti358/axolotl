@@ -25,19 +25,19 @@ class Crt(Processor):
         
         color = self.get_pixel(pixels_in, px, py) # ti.Vector([r, g, b])
 
-        scanline = ti.sin(((uv_y * self.height) * 0.03) + (t * 0.1)) * 0.10 + 0.75
+        scanline = ti.sin(((uv_y * (self.height*0.3)) * 0.03) + (t * 0.075)) * 0.6 + 1.1
         color *= scanline
 
         c = x % 3
         if c == 1:
-            color[1] = 0
-            color[2] = 0
+            color[1] *= 0.15
+            color[2] *= 0.3
         elif c == 2:
-            color[0] = 0
-            color[2] = 0
+            color[0] *= 0.3
+            color[2] *= 0.3
         else:
-            color[0] = 0
-            color[1] = 0
+            color[0] *= 0.3
+            color[1] *= 0.15
 
         vignette = 1.0 - self.smoothstep(0.8, 1.5, r_sq)
         color *= vignette

@@ -11,7 +11,7 @@ def calc_id(x, y, width):
 def calc_xy(id, width):
     return int(id % width), int(ti.floor(id / width))
 
-DMA_EFFECT = 0.3
+DMA_EFFECT = 0.8
 
 @ti.data_oriented
 class Datamisalignment(Processor):
