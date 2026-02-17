@@ -10,19 +10,18 @@ def get_procs(procs):
     for p in procs:
         proc = proc_loader.load(p)
         processors.append(proc)
-    
+
     return processors
 
 def print_params(params):
     for k, v in params.items():
         print(f'\t{k} = {v}')
+
 def print_procs(procs):
     for i, p in enumerate(procs):
         print(f'{i + 1}: {p[0].__name__}')
-        if p[1] is None:
-            continue
-
         print_params(p[1])
+
 def config_proc(proc):
     print(f'{proc[0].__name__} params:')
     print_params(proc[1])
@@ -35,13 +34,14 @@ def config_proc(proc):
             continue
 
         print(f'{i} = {proc[1][i]}')
-        val = input('value [\\c: cancel]: ')
+        val = input('value [\\c = cancel]: ')
         if val == '\\c':
             break
 
         curr_type = type(proc[1][i])
         proc[1][i] = curr_type(val)
         break
+
 def config_params(procs):
     ask = True
     while ask:
@@ -75,7 +75,11 @@ def main(img_path, procs, feedback):
     print_procs(processors)
     config_params(processors)
 
-    app = App(img_path, processors)
+    print_procs(processors)
+
+    procs, params = zip(*processors)
+
+    app = App(img_path, procs, params)
     app.run()
 
 if __name__ == "__main__":

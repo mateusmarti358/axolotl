@@ -8,7 +8,7 @@ from core.engine import Engine
 from core.procloader import ProcLoader
 
 class App:
-    def __init__(self, img_path, procs):
+    def __init__(self, img_path, procs, procs_params):
         # SETTING UP
         ti.init(arch=ti.gpu)
         self.rnd = Random(12)
@@ -20,9 +20,11 @@ class App:
 
         # ENGINES
         self.engines: list[Engine] = []
-        for proc in procs:
-            self.engines.append(Engine(proc[0], proc[1], self.img.width, self.img.height, self.rnd))
-        self.engines.append(Engine(ProcLoader().load('procs/zoom.py')[0], None, self.img.width, self.img.height, self.rnd))
+        for proc, params in zip(procs, procs_params):
+            print(params['intensity'])
+            self.engines.append(Engine(proc, params, params['intensity'], self.img.width, self.img.height, self.rnd))
+        
+        self.engines.append(Engine(ProcLoader().load('procs/zoom.py')[0], None, 1, self.img.width, self.img.height, self.rnd))
         self.engines[0].set_pixels_in(self.img.pixels)
 
         # INPUTS

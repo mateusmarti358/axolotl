@@ -15,7 +15,7 @@ def get_luma(pixel):
     return pixel[0] * 0.299 + pixel[1] * 0.587 + pixel[2] * 0.114
 
 class Processor(ABC):
-    def __init__(self, width, height):
+    def __init__(self, width, height, params=None):
         self.width = width
         self.height = height
 

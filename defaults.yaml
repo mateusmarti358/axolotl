@@ -1,3 +1,6 @@
+BoxBloom:
+  distance: 7
+  loss: 0.99
 GaussBloom:
   radius: 9
   sigma: 3.0

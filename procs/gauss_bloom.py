@@ -32,15 +32,6 @@ class GaussBloom(Processor):
         self.vb_buffer = ti.Vector.field(3, dtype=ti.f32, shape=(height, width))
         return super().set_shape(width, height)
 
-    @staticmethod
-    def get_default_params():
-        return {
-            "radius":    RADIUS,
-            "sigma":     SIGMA,
-            "threshold": THRESHOLD,
-            "intensity": INTENSITY
-        }
-
     def compute_weights(self):
         weights = []
         sum_w = 0.0

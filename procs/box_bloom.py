@@ -3,10 +3,16 @@ from core.processor import Processor, get_luma
 
 @ti.data_oriented
 class BoxBloom(Processor):
+    def __init__(self, width, height, params):
+        super().__init__(width, height)
+
+        self.distance = params["distance"]
+        self.loss = params["loss"]
+
     @ti.func
     def process(self, pixels_in, x, y, t, rnd):
-        distance = 7
-        loss = 0.99
+        distance = ti.static(self.distance)
+        loss = ti.static(self.loss)
 
         colour = pixels_in[x, y]
 
