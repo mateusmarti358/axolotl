@@ -1,6 +1,26 @@
+Shift:
+  # applies to 2 components at once (R, G, B)
+  channels: 'RG'
+
+DiagonalMatrix:
+  square_size: 3
+  thickness: 1
+  diagonals: True
+
+Filter:
+  threshold: 0.5
+
+Crt:
+  scanline_width: 1.0
+  scanline_intensity: 1.0
+  warp: 1.0
+  vignette: 1.0
+  vertical_components: True
+
 BoxBloom:
   distance: 7
   loss: 0.99
+
 GaussBloom:
   radius: 9
   sigma: 3.0

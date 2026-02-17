@@ -75,7 +75,7 @@ def main(img_path, procs, feedback):
     print_procs(processors)
     config_params(processors)
 
-    print_procs(processors)
+    # print_procs(processors)
 
     procs, params = zip(*processors)
 

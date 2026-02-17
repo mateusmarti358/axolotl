@@ -1,11 +1,33 @@
 import taichi as ti
 import numpy as np
 
+from sys import exit
+
 from core.random import Random
 from core.processor import Processor, get_luma
 
 @ti.data_oriented
 class Shift(Processor):
+    def __init__(self, width, height, params):
+        super().__init__(width, height)
+
+        channels = {
+            'r': 0,
+            'g': 1,
+            'b': 2
+        }
+
+        c = str(params["channels"][0]).lower()
+        if not c:
+            print('Not enough components in Shift.')
+            exit(1)
+        
+        c1 = channels[c]
+        c2 = channels[str(params["channels"][1]).lower()]
+
+        self.c1 = c1
+        self.c2 = c2
+
     @ti.func
     def process(self, pixels_in, x, y, t, rnd):
         ts = [
@@ -40,7 +62,7 @@ class Shift(Processor):
                 best_luma_r = neighbour_luma
                 best_xr = neighbour_x
 
-        final_r = self.get_pixel(pixels_in, best_xr, y)[0]
+        final_r = self.get_pixel(pixels_in, best_xr, y)[self.c1]
 
         best_yg = y
         melhor_luma_g = curr_luma
@@ -55,7 +77,7 @@ class Shift(Processor):
                 melhor_luma_g = neighbour_luma
                 best_yg = neighbour_y
 
-        final_g = self.get_pixel(pixels_in, x, best_yg)[1]
+        final_g = self.get_pixel(pixels_in, x, best_yg)[self.c2]
 
         # noise
         # float noise = sin(dot((float2)(x,y), (float2)(12.9898f,78.233f))) * 43758.5453f;
@@ -63,6 +85,9 @@ class Shift(Processor):
         # int azul_ruidoso = (int)pixel_atual.z + (int)((noise - 0.5f) * 40.0f);
         # uchar final_b = (uchar)clamp(azul_ruidoso, 0, 255);
 
-        color = ti.Vector([final_r, final_g, self.get_pixel(pixels_in, x, y)[2]])
+        color = self.get_pixel(pixels_in, x, y)
+
+        color[self.c1] = final_r
+        color[self.c2] = final_g
 
         return color

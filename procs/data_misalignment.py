@@ -11,8 +11,6 @@ def calc_id(x, y, width):
 def calc_xy(id, width):
     return int(id % width), int(ti.floor(id / width))
 
-DMA_EFFECT = 0.8
-
 @ti.data_oriented
 class DataMisalignment(Processor):
     @ti.func
@@ -42,9 +40,5 @@ class DataMisalignment(Processor):
             color[2] = pixels_in[src2_x, src2_y][1]
 
         prev_colour = pixels_in[x, y]
-
-        color[0] = lerp(prev_colour[0], color[0], DMA_EFFECT)
-        color[1] = lerp(prev_colour[1], color[1], DMA_EFFECT)
-        color[2] = lerp(prev_colour[2], color[2], DMA_EFFECT)
 
         return color
