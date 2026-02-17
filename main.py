@@ -1,20 +1,21 @@
 import click
 
 from core.app import App
-from core.procloader import load_processor_class
+from core.procloader import ProcLoader
 
 def get_procs(procs):
+    proc_loader = ProcLoader('defaults.yaml')
+
     processors = []
     for p in procs:
-        proclass = load_processor_class(p)
-        params: dict = proclass.get_default_params()
-        processors.append((proclass, params))
+        proc = proc_loader.load(p)
+        processors.append(proc)
+    
     return processors
 
 def print_params(params):
     for k, v in params.items():
         print(f'\t{k} = {v}')
-
 def print_procs(procs):
     for i, p in enumerate(procs):
         print(f'{i + 1}: {p[0].__name__}')
@@ -22,7 +23,6 @@ def print_procs(procs):
             continue
 
         print_params(p[1])
-
 def config_proc(proc):
     print(f'{proc[0].__name__} params:')
     print_params(proc[1])
@@ -39,15 +39,19 @@ def config_proc(proc):
         if val == '\\c':
             break
 
-        proc[1][i] = val
+        curr_type = type(proc[1][i])
+        proc[1][i] = curr_type(val)
         break
-
 def config_params(procs):
     ask = True
     while ask:
         i = input(f'Change any? [0 or empty = proceed] [1-{len(procs)}]: ')
         if len(i) == 0 or i == '0':
             ask = False
+            continue
+
+        if not i.isdigit():
+            print("Invalid index.")
             continue
 
         idx = int(i)

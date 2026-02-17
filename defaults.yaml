@@ -1,0 +1,5 @@
+GaussBloom:
+  radius: 9
+  sigma: 3.0
+  threshold: 0.1
+  intensity: 0.9

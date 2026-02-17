@@ -5,7 +5,7 @@ from PIL import Image
 from core.random import Random
 from core.pixels import Pixels
 from core.engine import Engine
-from core.procloader import load_processor_class
+from core.procloader import ProcLoader
 
 class App:
     def __init__(self, img_path, procs):
@@ -22,7 +22,7 @@ class App:
         self.engines: list[Engine] = []
         for proc in procs:
             self.engines.append(Engine(proc[0], proc[1], self.img.width, self.img.height, self.rnd))
-        self.engines.append(Engine(load_processor_class('procs/zoom.py'), None, self.img.width, self.img.height, self.rnd))
+        self.engines.append(Engine(ProcLoader().load('procs/zoom.py')[0], None, self.img.width, self.img.height, self.rnd))
         self.engines[0].set_pixels_in(self.img.pixels)
 
         # INPUTS

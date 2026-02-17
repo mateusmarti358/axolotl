@@ -1,10 +1,9 @@
 import importlib
 import sys
-import os
+import yaml
 
 def parse_proc_module(procname: str):
     return '.'.join('.'.join(procname.split('/')).split('.')[:-1])
-
 def parse_procname_class(procpath: str):
     procpath = procpath.split('/')[-1].capitalize().split('.')[0]
     chars = list(procpath)
@@ -17,18 +16,26 @@ def parse_procname_class(procpath: str):
         i += 1
     return "".join(chars)
 
-def load_processor_class(processor_path: str):
-    module_path = None
-    class_name = None
-    try:
-        module_path = parse_proc_module(processor_path)
-        module = importlib.import_module(module_path)
+class ProcLoader:
+    def __init__(self, config_path: str='defaults.yaml'):
+        with open(config_path, 'r') as f:
+            self.config = yaml.safe_load(f)
+        
+    def load(self, proc_path: str):
+        module_path = None
+        class_name = None
 
-        class_name = parse_procname_class(processor_path)
-        processor_class = getattr(module, class_name)
+        try:
+            module_path = parse_proc_module(proc_path)
+            module = importlib.import_module(module_path)
 
-        return processor_class
-    except (ImportError, AttributeError) as e:
-        print(f"Erro: Processador '{module_path}' não encontrado.")
-        print(f"Verifique se '{processor_path.lower()}' existe e contém a classe '{class_name}'.")
-        sys.exit(1)
+            class_name = parse_procname_class(proc_path)
+            processor_class = getattr(module, class_name)
+
+            params = self.config.get(class_name)
+
+            return (processor_class, params)
+        except (ImportError, AttributeError) as e:
+            print(f"Erro: Processador '{module_path}' não encontrado.")
+            print(f"Verifique se '{proc_path.lower()}' existe e contém a classe '{class_name}'.")
+            sys.exit(1)
