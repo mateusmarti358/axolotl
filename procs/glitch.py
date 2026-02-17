@@ -21,4 +21,3 @@ class Glitch(Processor):
             color = self.get_pixel_wrap_around(pixels_in, x + int(r * 300), y)
         
         return color
-        

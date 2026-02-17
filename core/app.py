@@ -11,16 +11,18 @@ class App:
     def __init__(self, img_path, procs):
         # SETTING UP
         ti.init(arch=ti.gpu)
+        self.rnd = Random(12)
+
+        # LOAD IMAGE
         raw_img = Image.open(img_path).convert("RGB")
         raw_img = raw_img.resize((1000, 1000), Image.Resampling.LANCZOS)
         self.img = Pixels(raw_img)
 
         # ENGINES
-        self.rnd = Random(12)
         self.engines: list[Engine] = []
         for proc in procs:
-            self.engines.append(Engine(proc, self.img.width, self.img.height, self.rnd))
-        self.engines.append(Engine(load_processor_class('zoom'), self.img.width, self.img.height, self.rnd))
+            self.engines.append(Engine(proc[0], proc[1], self.img.width, self.img.height, self.rnd))
+        self.engines.append(Engine(load_processor_class('procs/zoom.py'), None, self.img.width, self.img.height, self.rnd))
         self.engines[0].set_pixels_in(self.img.pixels)
 
         # INPUTS

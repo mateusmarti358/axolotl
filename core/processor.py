@@ -23,6 +23,10 @@ class Processor(ABC):
         self.width = width
         self.height = height
 
+    @staticmethod
+    def get_default_params():
+        return None
+
     @ti.func
     def get_pixel(self, pixels_in, x, y):
         return pixels_in[int(clamp(x, 0, self.width - 1)), int(clamp(y, 0, self.height - 1))]

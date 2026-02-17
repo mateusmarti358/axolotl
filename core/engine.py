@@ -8,12 +8,17 @@ from typing import Type
 
 @ti.data_oriented
 class Engine:
-    def __init__(self, processor: Type[Processor], width, height, rnd):
+    def __init__(self, processor, params, width, height, rnd):
         self.width = width
         self.height = height
         self.pixels_in = ti.Vector.field(3, dtype=ti.f32, shape=(self.height, self.width))
         self.pixels_out = ti.Vector.field(3, dtype=ti.f32, shape=(self.height, self.width))
-        self.processor = processor(width, height)
+
+        if params is None:
+            self.processor = processor(width, height)
+        else:
+            self.processor = processor(width, height, params)
+
         self.rnd = rnd
 
     def set_rnd(self, rnd):

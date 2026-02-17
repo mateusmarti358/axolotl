@@ -2,7 +2,7 @@ import taichi as ti
 from core.processor import Processor, get_luma
 
 @ti.data_oriented
-class Neonedges(Processor):
+class NeonEdges(Processor):
     @ti.func
     def process(self, pixels_in, x, y, t, rnd):
         t *= 0.06

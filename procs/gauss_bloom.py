@@ -3,14 +3,20 @@ import numpy as np
 
 from core.processor import Processor, get_luma
 
+RADIUS = 9
+SIGMA = 3.0
+THRESHOLD = 0.1
+INTENSITY = 0.9
+
 @ti.data_oriented
-class Gaussbloom(Processor):
-    def __init__(self, width, height):
+class GaussBloom(Processor):
+    def __init__(self, width, height, params):
         super().__init__(width, height)
-        self.radius = 9
-        self.sigma = 3.0
-        self.threshold = 0.1
-        self.intensity = 0.9
+
+        self.radius = params["radius"]
+        self.sigma = params["sigma"]
+        self.threshold = params["threshold"]
+        self.intensity = params["intensity"]
 
         self.weights_field = ti.field(dtype=ti.f32, shape=(self.radius * 2 + 1,))
         
@@ -25,6 +31,15 @@ class Gaussbloom(Processor):
         self.hb_buffer = ti.Vector.field(3, dtype=ti.f32, shape=(height, width))
         self.vb_buffer = ti.Vector.field(3, dtype=ti.f32, shape=(height, width))
         return super().set_shape(width, height)
+
+    @staticmethod
+    def get_default_params():
+        return {
+            "radius":    RADIUS,
+            "sigma":     SIGMA,
+            "threshold": THRESHOLD,
+            "intensity": INTENSITY
+        }
 
     def compute_weights(self):
         weights = []
