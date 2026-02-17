@@ -2,25 +2,28 @@ import taichi as ti
 import numpy as np
 from PIL import Image
 
-
-
+from core.random import Random
 from core.pixels import Pixels
 from core.engine import Engine
 from core.procloader import load_processor_class
 
 class App:
     def __init__(self, img_path, procs):
+        # SETTING UP
         ti.init(arch=ti.gpu)
         raw_img = Image.open(img_path).convert("RGB")
         raw_img = raw_img.resize((1000, 1000), Image.Resampling.LANCZOS)
         self.img = Pixels(raw_img)
 
+        # ENGINES
+        self.rnd = Random(12)
         self.engines: list[Engine] = []
         for proc in procs:
-            self.engines.append(Engine(proc, self.img.width, self.img.height))
-        self.engines.append(Engine(load_processor_class('zoom'), self.img.width, self.img.height))
+            self.engines.append(Engine(proc, self.img.width, self.img.height, self.rnd))
+        self.engines.append(Engine(load_processor_class('zoom'), self.img.width, self.img.height, self.rnd))
         self.engines[0].set_pixels_in(self.img.pixels)
 
+        # INPUTS
         self.last_mouse = None
         self.zoom_proc = self.engines[-1].processor
 
@@ -54,7 +57,8 @@ class App:
         self.last_mouse = curr_mouse
 
     def run(self):
-        gui = ti.GUI("", res=(self.img.width, self.img.height))
+        gui = ti.GUI("Axolotl", res=(self.img.width, self.img.height))
+
         while gui.running:
             self.handle_events(gui)
 

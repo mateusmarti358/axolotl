@@ -1,4 +1,5 @@
 import click
+
 from core.app import App
 from core.procloader import load_processor_class
 

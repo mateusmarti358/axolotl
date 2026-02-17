@@ -13,8 +13,8 @@ class Neonedges(Processor):
         return color[0] * 0.299 + color[1] * 0.587 + color[2] * 0.114
 
     @ti.func
-    def process(self, pixels_in, x, y, t):
-        t *= 0.2
+    def process(self, pixels_in, x, y, t, rnd):
+        t *= 0.06
 
         tl = self.get_luma(pixels_in, x - 1, y - 1)
         tc = self.get_luma(pixels_in, x,     y - 1)

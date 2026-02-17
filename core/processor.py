@@ -2,6 +2,14 @@ import taichi as ti
 import numpy as np
 from abc import ABC, abstractmethod
 
+@ti.func
+def clamp(x, min, max):
+    return ti.min(ti.max(x, min), max)
+
+@ti.func
+def lerp(a, b, t):
+    return a + (b - a) * t
+
 class Processor(ABC):
     def __init__(self, width, height):
         self.width = width
@@ -11,7 +19,11 @@ class Processor(ABC):
         self.width = width
         self.height = height
 
+    @ti.func
+    def get_pixel(self, pixels_in, x, y):
+        return pixels_in[int(clamp(x, 0, self.width - 1)), int(clamp(y, 0, self.height - 1))]
+
     @abstractmethod
     @ti.func
-    def process(self, pixels_in, x, y, t):
+    def process(self, pixels_in, x, y, t, rnd):
         pass

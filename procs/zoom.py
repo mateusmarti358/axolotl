@@ -13,7 +13,7 @@ class Zoom(Processor):
         self.center[None] = [0.5, 0.5]
 
     @ti.func
-    def process(self, pixels_in, x, y, t):
+    def process(self, pixels_in, x, y, t, rnd):
         z = self.zoom_amount[None]
         
         cx = self.center[None][0] * self.width
