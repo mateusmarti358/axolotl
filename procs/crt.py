@@ -3,9 +3,6 @@ from core.processor import Processor, clamp
 
 @ti.data_oriented
 class Crt(Processor):
-    def __init__(self, width, height):
-        super().__init__(width, height)
-
     @ti.func
     def process(self, pixels_in, x, y, t, rnd):
         nx = (float(x) / self.width) * 2.0 - 1.0
@@ -17,7 +14,7 @@ class Crt(Processor):
         uv_x = nx * (1.0 + r_sq * warp)
         uv_y = ny * (1.0 + r_sq * warp)
 
-        offset_dist = 5.0 * r_sq 
+        # offset_dist = 5.0 * r_sq 
         
         px = (uv_x + 1.0) * 0.5 * self.width
         py = (uv_y + 1.0) * 0.5 * self.height
@@ -30,6 +27,17 @@ class Crt(Processor):
 
         scanline = ti.sin(((uv_y * self.height) * 0.03) + (t * 0.1)) * 0.10 + 0.75
         color *= scanline
+
+        c = x % 3
+        if c == 1:
+            color[1] = 0
+            color[2] = 0
+        elif c == 2:
+            color[0] = 0
+            color[2] = 0
+        else:
+            color[0] = 0
+            color[1] = 0
 
         vignette = 1.0 - self.smoothstep(0.8, 1.5, r_sq)
         color *= vignette

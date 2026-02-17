@@ -2,14 +2,10 @@ import taichi as ti
 import numpy as np
 
 from core.random import Random
-from core.processor import Processor
+from core.processor import Processor, get_luma
 
 @ti.data_oriented
 class Shift(Processor):
-    @ti.func
-    def get_luma(self, pixel):
-        return pixel[0] * 0.299 + pixel[1] * 0.587 + pixel[2] * 0.114
-
     @ti.func
     def process(self, pixels_in, x, y, t, rnd):
         ts = [
@@ -29,7 +25,7 @@ class Shift(Processor):
                 distance *= int(1 + r[2])
                 threshold *= 1 + r[2]
 
-        curr_luma = self.get_luma(self.get_pixel(pixels_in, x, y))
+        curr_luma = get_luma(self.get_pixel(pixels_in, x, y))
 
         best_xr = x
         best_luma_r = curr_luma
@@ -38,7 +34,7 @@ class Shift(Processor):
 
         for i in range(1, distance + 1):
             neighbour_x = x + (i * r_dir)
-            neighbour_luma = self.get_luma(self.get_pixel(pixels_in, neighbour_x, y))
+            neighbour_luma = get_luma(self.get_pixel(pixels_in, neighbour_x, y))
 
             if neighbour_luma > best_luma_r + threshold:
                 best_luma_r = neighbour_luma
@@ -53,7 +49,7 @@ class Shift(Processor):
 
         for i in range(1, distance + 1):
             neighbour_y = y + (i * g_dir)
-            neighbour_luma = self.get_luma(self.get_pixel(pixels_in, x, neighbour_y))
+            neighbour_luma = get_luma(self.get_pixel(pixels_in, x, neighbour_y))
 
             if neighbour_luma > melhor_luma_g + threshold:
                 melhor_luma_g = neighbour_luma
