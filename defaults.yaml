@@ -8,7 +8,7 @@ DiagonalMatrix:
   diagonals: True
 
 Filter:
-  threshold: 0.2
+  threshold: 0.0
 
 Crt:
   scanline_width: 1.0
@@ -23,6 +23,6 @@ BoxBloom:
 
 GaussBloom:
   radius: 24
-  sigma: 24.0
-  threshold: 0.01
+  sigma: 6.0
+  threshold: 0.5
   mix: 1.0

@@ -31,7 +31,7 @@ class Shift(Processor):
     @ti.func
     def process(self, pixels_in, x, y, t, rnd):
         ts = [
-            (0.01, 0.19, 0.3),
+            (0.01, 0.19, 0.1),
             (0.2, 0.39, 0.6),
             (0.4, 0.59, 0.9),
             (0.6, 0.69, 1.2),

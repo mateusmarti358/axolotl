@@ -23,8 +23,8 @@ class App:
         raw_img = raw_img.resize(new_size, Image.Resampling.LANCZOS)
         self.img = Pixels(raw_img)
 
-        self.pixels_in = ti.Vector.field(3, dtype=ti.f32, shape=(self.img.height, self.img.width))
-        self.pixels_out = ti.Vector.field(3, dtype=ti.f32, shape=(self.img.height, self.img.width))
+        self.pixels_in = ti.Vector.field(3, dtype=ti.f32, shape=(self.img.width, self.img.height))
+        self.pixels_out = ti.Vector.field(3, dtype=ti.f32, shape=(self.img.width, self.img.height))
 
         # ENGINES
         self.engines: list[Engine] = []
@@ -82,6 +82,6 @@ class App:
                 # if i < len(self.engines) - 1:
                 #     self.engines[i + 1].set_pixels_in(self.engines[i].pixels_out)
 
-            gui.set_image(self.pixels_out)
+            gui.set_image(buffers[(len(self.engines)-1) % 2])
 
             gui.show()
