@@ -3,9 +3,19 @@ from core.processor import Processor, clamp
 
 @ti.data_oriented
 class Dither(Processor):
+    def __init__(self, width, height, params):
+        super().__init__(width, height)
+        self.levels = params['levels']
+        self.group_size = params['group_size']
+
     @ti.func
     def process(self, pixels_in, x, y, t, rnd):
-        levels = 0.5
+        levels = self.levels
+        group_size = self.group_size
+
+        gx = (x // group_size) * group_size
+        gy = (y // group_size) * group_size
+
         bayer = ti.Vector([
              0.0/16.0,  8.0/16.0,  2.0/16.0, 10.0/16.0,
             12.0/16.0,  4.0/16.0, 14.0/16.0,  6.0/16.0,
@@ -13,15 +23,13 @@ class Dither(Processor):
             15.0/16.0,  7.0/16.0, 13.0/16.0,  5.0/16.0
         ])
 
-        offset = int(((t * 0.03) % 100) + (x - y) * 0.3)
-
-        bayer_idx = ((y//2 + offset) % 4) * 4 + (x//2 + offset) % 4
+        bayer_idx = ((gy // group_size % 4) * 4 + (gx // group_size % 4))
         threshold = bayer[bayer_idx]
 
-        colour = pixels_in[x, y]
+        colour = pixels_in[gx, gy]
 
-        colour[0] = ti.floor(colour[0] * levels + threshold) / levels
-        colour[1] = ti.floor(colour[1] * levels + threshold) / levels
-        colour[2] = ti.floor(colour[2] * levels + threshold) / levels
+        res_r = ti.floor(colour[0] * levels + threshold) / levels
+        res_g = ti.floor(colour[1] * levels + threshold) / levels
+        res_b = ti.floor(colour[2] * levels + threshold) / levels
 
-        return colour
+        return ti.Vector([res_r, res_g, res_b])

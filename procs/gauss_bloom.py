@@ -22,14 +22,14 @@ class GaussBloom(Processor):
         
         self.compute_weights()
 
-        self.bright_buffer = ti.Vector.field(3, dtype=ti.f32, shape=(self.height, self.width))
-        self.hb_buffer = ti.Vector.field(3, dtype=ti.f32, shape=(self.height, self.width))
-        self.vb_buffer = ti.Vector.field(3, dtype=ti.f32, shape=(self.height, self.width))
+        self.bright_buffer = ti.Vector.field(3, dtype=ti.f32, shape=(self.width, self.height))
+        self.hb_buffer = ti.Vector.field(3, dtype=ti.f32, shape=(self.width, self.height))
+        self.vb_buffer = ti.Vector.field(3, dtype=ti.f32, shape=(self.width, self.height))
 
     def set_shape(self, width, height):
-        self.bright_buffer = ti.Vector.field(3, dtype=ti.f32, shape=(height, width))
-        self.hb_buffer = ti.Vector.field(3, dtype=ti.f32, shape=(height, width))
-        self.vb_buffer = ti.Vector.field(3, dtype=ti.f32, shape=(height, width))
+        self.bright_buffer = ti.Vector.field(3, dtype=ti.f32, shape=(width, height))
+        self.hb_buffer = ti.Vector.field(3, dtype=ti.f32, shape=(width, height))
+        self.vb_buffer = ti.Vector.field(3, dtype=ti.f32, shape=(width, height))
         return super().set_shape(width, height)
 
     def compute_weights(self):

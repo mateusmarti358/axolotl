@@ -2,6 +2,8 @@ import taichi as ti
 import numpy as np
 from PIL import Image
 
+import time
+
 from core.random import Random
 from core.pixels import Pixels
 from core.engine import Engine
@@ -16,7 +18,7 @@ class App:
         # LOAD IMAGE
         raw_img = Image.open(img_path).convert("RGB")
 
-        max_size = 1000
+        max_size = 900
         ratio = min(max_size / raw_img.width, max_size / raw_img.height)
         new_size = (int(raw_img.width * ratio), int(raw_img.height * ratio))
 
@@ -37,51 +39,87 @@ class App:
         self.last_mouse = None
         self.zoom_proc = self.engines[-1].processor
 
-    def handle_events(self, gui):
-        curr_mouse = gui.get_cursor_pos()
+        self.keys = set()
 
-        if gui.is_pressed(ti.GUI.LMB) and self.zoom_proc is not None and self.last_mouse is not None:
+    def just_pressed(self, window, key):
+        if window.is_pressed(key):
+            if key in self.keys:
+                return False
+            self.keys.add(key)
+            return True
+        else:
+            self.keys.discard(key)
+            return False
+
+    def handle_zoom(self, window: ti.ui.Window):
+        zoom_proc = None
+        for engine in self.engines:
+            if engine.processor.__class__.__name__ == 'Zoom':
+                zoom_proc = engine.processor
+
+        curr_mouse = window.get_cursor_pos()
+
+        if window.is_pressed(ti.GUI.LMB) and self.zoom_proc is not None and self.last_mouse is not None:
+            factor = self.zoom_proc.zoom_amount[None]
+
             dx = self.last_mouse[0] - curr_mouse[0]
             dy = self.last_mouse[1] - curr_mouse[1]
 
-            if self.zoom_proc.zoom_amount[None] < 1.0:
+            if factor < 1.0:
                 dx = -dx
                 dy = -dy
 
-            self.zoom_proc.center[None][0] += dx / self.zoom_proc.zoom_amount[None]
-            self.zoom_proc.center[None][1] += dy / self.zoom_proc.zoom_amount[None]
+            self.zoom_proc.center[None][0] += dx / (factor * 0.9)
+            self.zoom_proc.center[None][1] += dy / (factor * 0.9)
+        
+        if self.just_pressed(window, 'c'):
+            zoom_proc.zoom_amount[None] *= 1.1
+        if self.just_pressed(window, 'v'):
+            zoom_proc.zoom_amount[None] *= 0.9
 
-        for e in gui.get_events():
-            zoom_proc = None
-            for engine in self.engines:
-                if engine.processor.__class__.__name__ == 'Zoom':
-                    zoom_proc = engine.processor
+        zoom_proc.zoom_amount[None] = max(0.1, zoom_proc.zoom_amount[None])
 
-            if e.delta[1] > 0:
-                zoom_proc.zoom_amount[None] *= 1.1
-            elif e.delta[1] < 0:
-                zoom_proc.zoom_amount[None] *= 0.9
+    def handle_events(self, window: ti.ui.Window):
+        curr_mouse = window.get_cursor_pos()
 
-            zoom_proc.zoom_amount[None] = max(0.1, zoom_proc.zoom_amount[None])
+        self.handle_zoom(window)
+
+        for e in window.get_events():
+            pass
 
         self.last_mouse = curr_mouse
 
     def run(self):
-        gui = ti.GUI("Axolotl", res=(self.img.width, self.img.height))
+        window = ti.ui.Window("Axolotl", res=(self.img.width, self.img.height), fps_limit=144)
+        canvas = window.get_canvas()
+        # gui = ti.GUI("Axolotl", res=(self.img.width, self.img.height))
 
-        buffers = [self.pixels_in, self.pixels_out]
-        while gui.running:
-            self.handle_events(gui)
+        total_time = 0
+        
+        curr_in = self.img.pixels
+        curr_out = self.pixels_in
 
-            if gui.is_pressed(ti.GUI.ESCAPE):
+        while window.running:
+            start = time.perf_counter()
+            self.handle_events(window)
+
+            if window.is_pressed(ti.GUI.ESCAPE):
                 break
 
-            self.engines[0].process(self.img.pixels, self.pixels_in, gui.frame)
-            for i in range(1, len(self.engines)):
-                self.engines[i].process(buffers[(i + 1) % 2], buffers[i % 2], gui.frame)
-                # if i < len(self.engines) - 1:
-                #     self.engines[i + 1].set_pixels_in(self.engines[i].pixels_out)
+            for engine in self.engines:
+                engine.process(curr_in, curr_out, total_time * 60)
 
-            gui.set_image(buffers[(len(self.engines)-1) % 2])
+                curr_in = curr_out
 
-            gui.show()
+                curr_out = self.pixels_out if curr_in is self.pixels_in else self.pixels_in
+
+            canvas.set_image(curr_in)
+
+            window.show()
+            
+            ti.sync()
+            
+            end = time.perf_counter()
+            total_time += end - start
+
+            curr_in = self.img.pixels

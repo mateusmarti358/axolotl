@@ -6,6 +6,7 @@ def parse_proc_module(procname: str):
     return '.'.join('.'.join(procname.split('/')).split('.')[:-1])
 def parse_procname_class(procpath: str):
     procpath = procpath.split('/')[-1].capitalize().split('.')[0]
+    print(procpath)
     chars = list(procpath)
     i = 0
     while i < len(chars):
@@ -33,7 +34,8 @@ class ProcLoader:
             processor_class = getattr(module, class_name)
 
             params = self.config.get(class_name) or {}
-            params['intensity'] = 1.0
+            if 'intensity' not in params:
+                params['intensity'] = 1.0
 
             return (processor_class, params)
         except (ImportError, AttributeError) as e:

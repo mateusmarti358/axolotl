@@ -6,9 +6,15 @@ DiagonalMatrix:
   square_size: 2
   thickness: 1
   diagonals: True
+  intensity: 0.3
 
 Filter:
-  threshold: 0.0
+  threshold: 0.12
+  intensity: 1.0
+
+GroupFilter:
+  threshold: 2.0
+  radius: 2
 
 Crt:
   scanline_width: 1.0
@@ -22,7 +28,16 @@ BoxBloom:
   loss: 0.99
 
 GaussBloom:
-  radius: 24
-  sigma: 6.0
-  threshold: 0.5
+  radius: 9
+  sigma: 4.0
+  threshold: 0.3
   mix: 1.0
+
+Dither:
+  levels: 0.6
+  group_size: 2
+
+DitheringFilter:
+  threshold: 0.5
+  levels: 0.5
+  group_size: 2
